@@ -7,26 +7,29 @@ import (
 )
 
 func main() {
-
 	exibeIntroducao()
-	exibeMenu()
+	for {
 
-	comando := leComando()
-	fmt.Println("O comando escolhido foi", comando) // Adicione esta linha
+		exibeMenu()
 
-	switch comando {
-	case 1:
+		comando := leComando()
 
-		iniciarMonitoramento()
-	case 2:
-		fmt.Println("Exibindo Logs...")
-	case 0:
-		fmt.Println("Fechando o programa...")
-		os.Exit(0)
-	default:
-		fmt.Println("Não conheço este comando")
-		os.Exit(-1)
+		switch comando {
+		case 1:
+
+			iniciarMonitoramento()
+		case 2:
+			fmt.Println("Exibindo Logs...")
+		case 0:
+			fmt.Println("Fechando o programa...")
+			os.Exit(0)
+		default:
+			fmt.Println("Não conheço este comando")
+			os.Exit(-1)
+		}
+
 	}
+
 }
 
 func exibeIntroducao() {
@@ -50,8 +53,13 @@ func leComando() int {
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitoramento iniciado...")
-	site := "https://www.alura.com.br"
+	site := "https://random-status-code.herokuapp.com/"
 	resp, _ := http.Get(site)
-	fmt.Println(resp)
+	// fmt.Println(resp) // Remova ou comente esta linha
 
+	if resp.StatusCode == 200 {
+		fmt.Println("Site:", site, "foi carregado com sucesso!")
+	} else {
+		fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+	}
 }
