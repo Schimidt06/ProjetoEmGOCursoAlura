@@ -1,15 +1,16 @@
 package main
 
-import "fmt"
-import "os"
-	
-	
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
 
 	exibeIntroducao()
 	exibeMenu()
 	comando := leComando()
+	fmt.Println("O comando escolhido foi", comando) // Adicione esta linha
 
 	switch comando {
 	case 1:
@@ -20,7 +21,7 @@ func main() {
 		fmt.Println("Fechando o programa...")
 		os.Exit(0)
 	default:
-		fmt.Println("Comando inválido")
+		fmt.Println("Não conheço este comando")
 		os.Exit(-1)
 	}
 }
