@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -11,13 +13,10 @@ const monitoramentos = 5
 const delay = 5 * time.Second
 
 func main() {
-
 	exibeIntroducao()
 	for {
 		exibeMenu()
-
 		comando := leComando()
-
 		switch comando {
 		case 1:
 			iniciarMonitoramento()
@@ -28,7 +27,7 @@ func main() {
 			os.Exit(0)
 		default:
 			fmt.Println("Não conheço este comando")
-			os.Exit(255) // Use 255 para compatibilidade cross-plataforma
+			os.Exit(255)
 		}
 	}
 }
@@ -50,7 +49,7 @@ func leComando() int {
 	var comandoLido int
 	_, err := fmt.Scan(&comandoLido)
 	if err != nil {
-		return -1 // Garante que entradas inválidas caiam no default
+		return -1
 	}
 	fmt.Println("O comando escolhido foi", comandoLido)
 	fmt.Println("")
@@ -59,18 +58,13 @@ func leComando() int {
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
-	sites := []string{
-		"https://random-status-code.herokuapp.com/",
-		"https://www.alura.com.br",
-		"https://www.caelum.com.br",
-	}
-
+	sites := leSitesDoArquivo()
 	for i := 0; i < monitoramentos; i++ {
 		for j, site := range sites {
 			fmt.Println("Testando site", j, ":", site)
 			testaSite(site)
 		}
-		time.Sleep(delay) // Corrigido: delay já está em time.Duration
+		time.Sleep(delay)
 		fmt.Println("")
 	}
 	fmt.Println("")
@@ -79,7 +73,7 @@ func iniciarMonitoramento() {
 func testaSite(site string) {
 	resp, err := http.Get(site)
 	if err != nil {
-		fmt.Println("Erro ao acessar o site:", site)
+		fmt.Println("Erro ao acessar o site:", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -89,4 +83,24 @@ func testaSite(site string) {
 	} else {
 		fmt.Println("Site:", site, "esta com problemas. Status Code:", resp.StatusCode)
 	}
+}
+
+func leSitesDoArquivo() []string {
+    var sites []string
+
+    arquivo, err := os.Open("sites.txt")
+    if err != nil {
+        fmt.Println("Erro ao abrir o arquivo:", err)
+        return sites
+    }
+    defer arquivo.Close()
+
+    scanner := bufio.NewScanner(arquivo)
+    for scanner.Scan() {
+        linha := strings.TrimSpace(scanner.Text())
+        if linha != "" {
+            sites = append(sites, linha)
+        }
+    }
+    return sites
 }
