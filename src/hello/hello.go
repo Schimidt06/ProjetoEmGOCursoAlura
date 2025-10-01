@@ -4,20 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"reflect"
 )
 
 func main() {
-	var sites [4]string
-	sites[0] = "https://random-status-code.herokuapp.com/"
-	sites[1] = "https://www.alura.com.br"
-	sites[2] = "https://www.caelum.com.br"
-	fmt.Println(reflect.TypeOf(sites))
-	fmt.Println(sites)
-	exibeNomes()
-	//exibeIntroducao()
+
+	exibeIntroducao()
 	for {
-		//exibeMenu()
+		exibeMenu()
 
 		comando := leComando()
 
@@ -53,19 +46,22 @@ func exibeMenu() {
 
 func leComando() int {
 	var comandoLido int
-	fmt.Scan(&comandoLido)
-	// fmt.Println("A variavel escolhida foi", comandoLido) // Remova ou comente esta linha
+	_, err := fmt.Scan(&comandoLido)
+	if err != nil {
+		return -1 // Retorna um valor inválido para cair no default
+	}
 	return comandoLido
 }
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
-	var sites [4]string
-	sites[0] = "https://random-status-code.herokuapp.com/"
-	sites[1] = "https://www.alura.com.br"
-	sites[2] = "https://www.caelum.com.br"
+	sites := []string{"https://random-status-code.herokuapp.com/",
+		"https://www.alura.com.br", "https://www.caelum.com.br"}
 
-	fmt.Println(sites)
+	//fmt.Println(sites)
+	for i, site := range sites {
+		fmt.Println("estou na posição", i, "do slice e o site é:", site)
+	}
 
 	site := "https://random-status-code.herokuapp.com/"
 	resp, _ := http.Get(site)
@@ -75,20 +71,4 @@ func iniciarMonitoramento() {
 	} else {
 		fmt.Println("Site:", site, "esta com problemas. Status Code:", resp.StatusCode)
 	}
-}
-
-func exibeNomes() {
-	nomes := []string{"João", "Maria", "José"}
-
-	fmt.Println(nomes)
-	fmt.Println(reflect.TypeOf(nomes))
-	fmt.Println("O meu slice tem", len(nomes), "itens")
-	fmt.Println("O meu slice tem capacidade para", cap(nomes), "itens")
-
-	nomes = append(nomes, "Ana")
-
-	fmt.Println(nomes)
-	fmt.Println(reflect.TypeOf(nomes))
-	fmt.Println("O meu slice tem", len(nomes))
-	fmt.Println("O meu slice tem capacidade para", cap(nomes), "itens")
 }
