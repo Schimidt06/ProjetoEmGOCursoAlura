@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
+
+const monitoramentos = 5
+const delay = 5 * time.Second
 
 func main() {
 
@@ -16,7 +20,6 @@ func main() {
 
 		switch comando {
 		case 1:
-
 			iniciarMonitoramento()
 		case 2:
 			fmt.Println("Exibindo Logs...")
@@ -25,11 +28,9 @@ func main() {
 			os.Exit(0)
 		default:
 			fmt.Println("Não conheço este comando")
-			os.Exit(-1)
+			os.Exit(255) // Use 255 para compatibilidade cross-plataforma
 		}
-
 	}
-
 }
 
 func exibeIntroducao() {
@@ -38,33 +39,50 @@ func exibeIntroducao() {
 	fmt.Println("Olá, Sr.", nome)
 	fmt.Println("Este programa está na versão", versao)
 }
+
 func exibeMenu() {
-	fmt.Println("1-Inicar Monitoramento")
-	fmt.Println("2-Exibir Logs")
-	fmt.Println("0-Fechar essa bosta")
+	fmt.Println("1- Iniciar Monitoramento")
+	fmt.Println("2- Exibir Logs")
+	fmt.Println("0- Sair do Programa")
 }
 
 func leComando() int {
 	var comandoLido int
 	_, err := fmt.Scan(&comandoLido)
 	if err != nil {
-		return -1 // Retorna um valor inválido para cair no default
+		return -1 // Garante que entradas inválidas caiam no default
 	}
+	fmt.Println("O comando escolhido foi", comandoLido)
+	fmt.Println("")
 	return comandoLido
 }
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
-	sites := []string{"https://random-status-code.herokuapp.com/",
-		"https://www.alura.com.br", "https://www.caelum.com.br"}
-
-	//fmt.Println(sites)
-	for i, site := range sites {
-		fmt.Println("estou na posição", i, "do slice e o site é:", site)
+	sites := []string{
+		"https://random-status-code.herokuapp.com/",
+		"https://www.alura.com.br",
+		"https://www.caelum.com.br",
 	}
 
-	site := "https://random-status-code.herokuapp.com/"
-	resp, _ := http.Get(site)
+	for i := 0; i < monitoramentos; i++ {
+		for j, site := range sites {
+			fmt.Println("Testando site", j, ":", site)
+			testaSite(site)
+		}
+		time.Sleep(delay) // Corrigido: delay já está em time.Duration
+		fmt.Println("")
+	}
+	fmt.Println("")
+}
+
+func testaSite(site string) {
+	resp, err := http.Get(site)
+	if err != nil {
+		fmt.Println("Erro ao acessar o site:", site)
+		return
+	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode == 200 {
 		fmt.Println("Site:", site, "foi carregado com sucesso!")
