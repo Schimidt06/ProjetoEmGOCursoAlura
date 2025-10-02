@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	
 )
 
 const monitoramentos = 5
@@ -87,21 +86,21 @@ func testaSite(site string) {
 }
 
 func leSitesDoArquivo() []string {
-    var sites []string
+	var sites []string
 
-    arquivo, err := os.Open("sites.txt")
-    if err != nil {
-        fmt.Println("Erro ao abrir o arquivo:", err)
-        return sites
-    }
-    defer arquivo.Close()
+	arquivo, err := os.Open("sites.txt")
+	if err != nil {
+		fmt.Println("Erro ao abrir o arquivo:", err)
+		return sites
+	}
+	defer arquivo.Close()
 
-    scanner := bufio.NewScanner(arquivo)
-    for scanner.Scan() {
-        linha := strings.TrimSpace(scanner.Text())
-        if linha != "" {
-            sites = append(sites, linha)
-        }
-    }
-    return sites
+	scanner := bufio.NewScanner(arquivo)
+	for scanner.Scan() {
+		linha := strings.TrimSpace(scanner.Text())
+		if linha != "" {
+			sites = append(sites, linha)
+		}
+	}
+	return sites
 }
