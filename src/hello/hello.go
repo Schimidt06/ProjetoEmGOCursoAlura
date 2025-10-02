@@ -14,7 +14,7 @@ const delay = 5 * time.Second
 
 func main() {
 	exibeIntroducao()
-	registraLog("site-falso", false)
+
 	for {
 		exibeMenu()
 		comando := leComando()
@@ -114,5 +114,7 @@ func registraLog(site string, status bool) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(arquivo)
+	arquivo.WriteString(site + " - " + time.Now().Format("02/01/2006 15:04:05") + " - online: " + fmt.Sprint(status) + "\n")
+
+	arquivo.Close()
 }
