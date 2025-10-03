@@ -9,29 +9,25 @@ type ContaCorrente struct {
 	saldo         float64
 }
 
+func (c *ContaCorrente) Sacar(valorDoSaque float64) string {
+	podeSacar := valorDoSaque > 0 && valorDoSaque <= c.saldo
+	if podeSacar {
+		c.saldo -= valorDoSaque
+		return "Saque realizado com sucesso"
+	} else {
+		return "Saldo insuficiente"
+	}
+}
+
 func main() {
-	//primeiro modo de fazer a varavel
-	//contaDoJoao := ContaCorrente{titular: "João", numeroAgencia: 123, numeroConta: 456789, saldo: 1000.0}
-	//segundo modo de fazer a variavel
+	contaDaSilvia := ContaCorrente{}
+	contaDaSilvia.titular = "Silvia"
+	contaDaSilvia.saldo = 1000
 
-	//contaDaBruna2:= ContaCorrente{"Bruna", 321, 987654, 2500.0}
+	// Imprime o saldo ANTES do saque
+	fmt.Println(contaDaSilvia.saldo)
 
-	//fmt.Println(contaDoJoao == contaDoJoao2)
-	//fmt.Println(contaDaBruna)
-
-	//Terceiro modo de fazer a variavel
-	var contaDaCristina *ContaCorrente
-	contaDaCristina = new(ContaCorrente)
-	contaDaCristina.titular = "Cristina"
-	contaDaCristina.saldo = 3000.0
-
-	var contaDaCristina2 *ContaCorrente
-	contaDaCristina2 = new(ContaCorrente)
-	contaDaCristina2.titular = "Cristina"
-	contaDaCristina2.saldo = 3000.0
-
-	fmt.Println(&contaDaCristina)
-	fmt.Println(&contaDaCristina2)
-
-	fmt.Println(*contaDaCristina == *contaDaCristina2)
+	// Imprime o saldo DEPOIS do saque
+	fmt.Println(contaDaSilvia.Sacar(500))
+	fmt.Println(contaDaSilvia.saldo)
 }
