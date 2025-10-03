@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -23,12 +24,13 @@ func main() {
 			iniciarMonitoramento()
 		case 2:
 			fmt.Println("Exibindo Logs...")
+			imprimeLogs()
 		case 0:
 			fmt.Println("Fechando o programa...")
 			os.Exit(0)
 		default:
 			fmt.Println("Não conheço este comando")
-			os.Exit(255)
+			// Decidi não sair mais com os.Exit para o usuário poder tentar de novo
 		}
 	}
 }
@@ -41,26 +43,42 @@ func exibeIntroducao() {
 }
 
 func exibeMenu() {
-	fmt.Println("1- Iniciar Monitoramento")
+	fmt.Println("\n1- Iniciar Monitoramento")
 	fmt.Println("2- Exibir Logs")
 	fmt.Println("0- Sair do Programa")
 }
 
 func leComando() int {
-	var comandoLido int
-	_, err := fmt.Scan(&comandoLido)
+	reader := bufio.NewReader(os.Stdin)
+	// Lê a string até o caractere de nova linha '\n'
+	input, _ := reader.ReadString('\n')
+	// Remove espaços em branco e a quebra de linha
+	comandoStr := strings.TrimSpace(input)
+	// Converte a string limpa para inteiro
+	comando, err := strconv.Atoi(comandoStr)
+
+	// Se der erro na conversão (ex: usuário digitou "abc"), retorna um comando inválido
 	if err != nil {
-		return -1
+		fmt.Println("Por favor, digite um número válido.")
+		return -1 // Um número que não está no seu menu para cair no default
 	}
-	fmt.Println("O comando escolhido foi", comandoLido)
+
+	fmt.Println("O comando escolhido foi", comando)
 	fmt.Println("")
-	return comandoLido
+	return comando
 }
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
 	sites := leSitesDoArquivo()
+
+	if len(sites) == 0 {
+		fmt.Println("Nenhum site encontrado no arquivo 'sites.txt'.")
+		return
+	}
+
 	for i := 0; i < monitoramentos; i++ {
+		fmt.Println("--- Ciclo de Monitoramento", i+1, "---")
 		for j, site := range sites {
 			fmt.Println("Testando site", j, ":", site)
 			testaSite(site)
@@ -93,7 +111,7 @@ func leSitesDoArquivo() []string {
 
 	arquivo, err := os.Open("sites.txt")
 	if err != nil {
-		fmt.Println("Erro ao abrir o arquivo:", err)
+		fmt.Println("Erro ao abrir o arquivo 'sites.txt':", err)
 		return sites
 	}
 	defer arquivo.Close()
@@ -114,7 +132,24 @@ func registraLog(site string, status bool) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	arquivo.WriteString(site + " - " + time.Now().Format("02/01/2006 15:04:05") + " - online: " + fmt.Sprint(status) + "\n")
+	defer arquivo.Close()
 
-	arquivo.Close()
+	statusStr := "online: false"
+	if status {
+		statusStr = "online: true"
+	}
+
+	logLine := fmt.Sprintf("%s - %s - %s\n", time.Now().Format("02/01/2006 15:04:05"), site, statusStr)
+	arquivo.WriteString(logLine)
+}
+
+func imprimeLogs() {
+	arquivo, err := os.ReadFile("log.txt")
+	if err != nil {
+		fmt.Println("Erro ao ler o arquivo de log:", err)
+		return
+	}
+	fmt.Println("--- INÍCIO DOS LOGS ---")
+	fmt.Print(string(arquivo))
+	fmt.Println("--- FIM DOS LOGS ---")
 }
