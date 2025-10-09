@@ -1,5 +1,3 @@
-// routes/routes.go
-
 package routes
 
 import (
@@ -9,7 +7,9 @@ import (
 
 func CarregaRotas() {
 	http.HandleFunc("/", controllers.Index)
-	// NOVAS ROTAS
 	http.HandleFunc("/new", controllers.New)
 	http.HandleFunc("/insert", controllers.Insert)
+	http.HandleFunc("/delete", controllers.Delete)
+	http.HandleFunc("/edit", controllers.Edit)
+	http.HandleFunc("/update", controllers.Update) // NOVA ROTA PARA SALVAR A ATUALIZAÇÃO
 }
